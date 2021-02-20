@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import {expect} from 'chai'
-import diff, {parse, toString} from '../src'
+import { expect } from 'chai'
+import diff, { parse, toString } from '../src'
 
 const sourcePath = path.join(__dirname, 'diff-source.css')
 const reversedPath = path.join(__dirname, 'diff-reversed.css')
@@ -54,6 +54,46 @@ describe('Diff', () => {
     const output = diff(source, order)
     expect(output).to.equal(expected)
   })
+
+  it('should include at-rules', () => {
+    const source = `@media screen and (min-width: 100px) {
+  .grid {
+    float: left;
+  }
+
+  @supports (display: grid) {
+    .grid {
+      display: grid;
+      float: right;
+    }
+  }
+}`
+    const reversed = `@media screen and (min-width: 100px) {
+  .grid {
+    float: right;
+  }
+
+  @supports (display: grid) {
+    .grid {
+      display: grid;
+      float: left;
+    }
+  }
+}`
+    const expected = `@media screen and (min-width: 100px) {
+  .grid {
+    float: right;
+  }
+  @supports (display: grid) {
+    .grid {
+      float: left;
+    }
+  }
+}
+`
+
+    expect(diff(source, reversed)).to.equal(expected)
+  })
 })
 
 describe('Parse', () => {
@@ -62,14 +102,14 @@ describe('Parse', () => {
     const expected = {
       body: {
         width: '60px',
-        height: '20px',
+        height: '20px'
       },
       '.foo': {
-        height: '10px',
+        height: '10px'
       },
       '.foo .bar': {
-        margin: '10px',
-      },
+        margin: '10px'
+      }
     }
 
     expect(parse(css)).to.eql(expected)
@@ -81,10 +121,10 @@ describe('toString', () => {
     const css = {
       body: {
         width: '10px',
-        margin: 'auto',
+        margin: 'auto'
       },
       '.foo': {
-        height: '20px',
+        height: '20px'
       }
     }
 
