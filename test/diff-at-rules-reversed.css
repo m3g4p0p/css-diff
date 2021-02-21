@@ -1,0 +1,18 @@
+@media screen and (min-width: 100px) {
+  .grid {
+    float: right;
+  }
+
+  @supports (display: grid) {
+    .grid {
+      display: grid;
+      float: left;
+    }
+  }
+}
+
+@media screen and (min-width: 100px) {
+  body {
+    padding-right: 5px;
+  }
+}

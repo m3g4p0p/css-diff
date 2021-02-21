@@ -3,11 +3,11 @@ import merge from 'lodash.merge'
 
 const parse = css => {
   const ast = typeof css === 'string' ? postcssParse(css) : css
-  let result = {}
+  const result = {}
 
   ast.nodes.forEach(node => {
     if (node.type === 'rule') {
-      const declarations = { }
+      const declarations = {}
 
       node.nodes.forEach(dcl => {
         if (dcl.type !== 'decl') {
@@ -16,9 +16,9 @@ const parse = css => {
         declarations[dcl.prop] = dcl.value
       })
 
-      result = merge(result, { [node.selector]: declarations })
+      merge(result, { [node.selector]: declarations })
     } else if (node.type === 'atrule' && node.nodes) {
-      result = merge(result, { [`@${node.name} ${node.params}`]: parse(node) })
+      merge(result, { [`@${node.name} ${node.params}`]: parse(node) })
     }
   })
 
@@ -61,26 +61,24 @@ const addProp = (diff, selector, prop, value) => {
 }
 
 const diffObjects = (sourceObject, reversedObject) => {
-  let diff = {}
+  const diff = {}
 
   Object.keys(reversedObject).forEach(selector => {
     if (isAtRule(selector)) {
-      diff = merge(diff, {
+      return merge(diff, {
         [selector]: sourceObject[selector]
           ? diffObjects(sourceObject[selector], reversedObject[selector])
           : reversedObject[selector]
       })
-
-      return
     }
 
     Object.keys(reversedObject[selector]).forEach(prop => {
       if (sourceObject[selector][prop]) {
         if (sourceObject[selector][prop] !== reversedObject[selector][prop]) {
-          diff = addProp(diff, selector, prop, reversedObject[selector][prop])
+          addProp(diff, selector, prop, reversedObject[selector][prop])
         }
       } else {
-        diff = addProp(diff, selector, prop, reversedObject[selector][prop])
+        addProp(diff, selector, prop, reversedObject[selector][prop])
       }
     })
   })

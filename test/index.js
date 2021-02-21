@@ -8,6 +8,9 @@ const reversedPath = path.join(__dirname, 'diff-reversed.css')
 const resultPath = path.join(__dirname, 'diff-result.css')
 const orderPath = path.join(__dirname, 'diff-order.css')
 const orderResultPath = path.join(__dirname, 'diff-order-result.css')
+const atRulesSourcePath = path.join(__dirname, 'diff-at-rules-source.css')
+const atRulesReversedPath = path.join(__dirname, 'diff-at-rules-reversed.css')
+const atRulesResultPath = path.join(__dirname, 'diff-at-rules-result.css')
 
 describe('Diff', () => {
   it('should return only the diff', () => {
@@ -56,41 +59,9 @@ describe('Diff', () => {
   })
 
   it('should include at-rules', () => {
-    const source = `@media screen and (min-width: 100px) {
-  .grid {
-    float: left;
-  }
-
-  @supports (display: grid) {
-    .grid {
-      display: grid;
-      float: right;
-    }
-  }
-}`
-    const reversed = `@media screen and (min-width: 100px) {
-  .grid {
-    float: right;
-  }
-
-  @supports (display: grid) {
-    .grid {
-      display: grid;
-      float: left;
-    }
-  }
-}`
-    const expected = `@media screen and (min-width: 100px) {
-  .grid {
-    float: right;
-  }
-  @supports (display: grid) {
-    .grid {
-      float: left;
-    }
-  }
-}
-`
+    const source = fs.readFileSync(atRulesSourcePath, 'utf-8')
+    const reversed = fs.readFileSync(atRulesReversedPath, 'utf-8')
+    const expected = fs.readFileSync(atRulesResultPath, 'utf-8')
 
     expect(diff(source, reversed)).to.equal(expected)
   })
